@@ -1,6 +1,6 @@
 # README #
 
-Cpu Gpu Graph is a little tool to monitor the CPU and GPU (only Nvidia) load. Nothing more. I wanted a simple and small app on my second monitor to keep an eye on my computer's performance. These are also my first endeavors into C# and WPF.
+Cpu Gpu Graph is a little tool to monitor the CPU and GPU (only Nvidia) load. Nothing more. I wanted a simple and small app on my second monitor to keep an eye on my computer's performance. These are also my first real endeavors into C# and WPF.
 
 ![Cpu Gpu Graph screenshot](http://semper.space/CGG/Screenshot_01.png "Cpu Gpu Graph")
 
