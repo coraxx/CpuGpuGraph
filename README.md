@@ -35,11 +35,15 @@ Copyright (C) 2016  Jan Arnold
 
 ### Version ###
 
-Version 1.0.0 - Initial Release
+v1.0.1 - nvGpuLoad_x86.dll was build in debug mode and thus would not work on systems without a SDK installed. Should work fine now.
 
-### Binaries ###
+v1.0.0 - Initial Release
+
+### Installation ###
 
 Download the portable version (zip file with the executable) or the the installer under the [download section](https://bitbucket.org/splo0sh/cpugpugraph/downloads).
+
+Since there is code written in C++ you may need to install the [Visual C++ Redistributable for Visual Studio 2015 x86](https://www.microsoft.com/en-us/download/details.aspx?id=48145).
 
 ### Who do I talk to? ###
 
