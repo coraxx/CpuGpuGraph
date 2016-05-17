@@ -39,7 +39,7 @@ Version 1.0.0 - Initial Release
 
 ### Binaries ###
 
-Download v1.0.0 [here](http://semper.space/CGG/CGG_1.0.0.zip).
+Download the portable version (zip file with the executable) or the the installer under the [download section](https://bitbucket.org/splo0sh/cpugpugraph/downloads).
 
 ### Who do I talk to? ###
 
