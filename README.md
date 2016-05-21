@@ -35,15 +35,24 @@ Copyright (C) 2016  Jan Arnold
 
 ### Version ###
 
+<<<<<<< HEAD
 v1.0.2 - custom polling/update rate (0.1, 0.2, 0.5, 1, 2, 5 or 10 second intervals)
        - added togglable glow around application window indicating CPU load from low (blue) to high (red)
 
 v1.0.1 - nvGpuLoad_x86.dll was build in debug mode and thus would not work on systems without a SDK installed. Should work fine now
 
 v1.0.0 - Initial Release
+=======
+v1.0.1 - nvGpuLoad_x86.dll was build in debug mode and thus would not work on systems without a SDK installed. Should work fine now.
+>>>>>>> 222ec02991b844c6c26cf7e32ec1e8923cec6e84
 
-### Binaries ###
+v1.0.0 - Initial Release
 
+<<<<<<< HEAD
+=======
+### Installation ###
+
+>>>>>>> 222ec02991b844c6c26cf7e32ec1e8923cec6e84
 Download the portable version (zip file with the executable) or the the installer under the [download section](https://bitbucket.org/splo0sh/cpugpugraph/downloads).
 
 Since there is code written in C++ you may need to install the [Visual C++ Redistributable for Visual Studio 2015 x86](https://www.microsoft.com/en-us/download/details.aspx?id=48145).
