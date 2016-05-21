@@ -52,8 +52,4 @@ using System.Windows;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
-<<<<<<< HEAD
 [assembly: AssemblyFileVersion("1.0.2.0")]
-=======
-[assembly: AssemblyFileVersion("1.0.1.0")]
->>>>>>> 222ec02991b844c6c26cf7e32ec1e8923cec6e84
