@@ -11,127 +11,181 @@
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"        
-        Background="{DynamicResource MaterialDesignPaper}"
+        TextOptions.TextRenderingMode="Auto"
+        Background="Transparent"
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
         WindowStyle="None"
         AllowsTransparency="True"
         Loaded="Window_Loaded">
-        <!--ResizeMode="NoResize"
+        <!--
+        Background="#FF383838"
+        ResizeMode="NoResize"
         ShowInTaskbar="False">-->
-    <Grid VerticalAlignment="Top">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition />
-        </Grid.RowDefinitions>
 
-        <!--Window bar-->
-        <Grid Grid.Row="0" Margin="0 0 6 6">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <!--Rectangle to drag window-->
-            <TextBlock Grid.Column="0" Margin="25 0 0 0" VerticalAlignment="Center">CpuGpuGraph</TextBlock>
-            <materialDesign:PackIcon Grid.Column="0" Kind="ChartLine" Margin="6 0 0 0" VerticalAlignment="Center"/>
-            <Rectangle Grid.Column="0" Height="27" Name="Rectangle1" VerticalAlignment="Top" MouseDown="rectangle1_MouseDown">
-                <Rectangle.Fill>
-                    <SolidColorBrush Color="Transparent" />
-                </Rectangle.Fill>
-            </Rectangle>
-
-            <!--Minimize window-->
-            <Button Grid.Column="1" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}" Click="buttonMinimize_Click">
-                <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21"/>
-            </Button>
-            
-            <!--Maximize and restore window-->
-            <Button Grid.Column="2" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}" Click="buttonMaximize_Click">
-                <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21">
-                    <materialDesign:PackIcon.Style>
-                        <Style TargetType="materialDesign:PackIcon">
-                            <Setter Property="Kind" Value="WindowMaximize"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding WindowMaximized, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Value="True">
-                                    <Setter Property="Kind" Value="WindowRestore"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding WindowMaximized, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}" Value="False">
-                                    <Setter Property="Kind" Value="WindowMaximize"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </materialDesign:PackIcon.Style>
-                </materialDesign:PackIcon>
-            </Button>
-
-            <!--Close window-->
-            <Button Grid.Column="3" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}" Click="buttonClose_Click">
-                <materialDesign:PackIcon Kind="WindowClose" VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21"/>
-            </Button>
-        </Grid>
-
-        <!--Main window-->
-        <Grid Grid.Row="1" Margin="16 6  16 6">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="159" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <TextBlock Grid.Column="0" VerticalAlignment="Center">CPU</TextBlock>
-            <materialDesign:PackIcon Grid.Column="1" Kind="Console"  Margin="6 0 0 0" VerticalAlignment="Center"/>
-            <TextBlock Grid.Column="2" VerticalAlignment="Center">GPU</TextBlock>
-            <materialDesign:PackIcon Grid.Column="3" Kind="Codepen" Margin="6 0 0 0" VerticalAlignment="Center"/>
-        </Grid>
+    <Grid>
+        <!--Glowing Boarder-->
+        <Border Name="FrameAccent" Margin="6" BorderBrush="DodgerBlue"  BorderThickness="1"/>
+        <Border Name="FrameBlur" Margin="6" BorderBrush="DodgerBlue"  BorderThickness="1">
+            <Border.Effect>
+                <BlurEffect Radius="8" KernelType="Gaussian" RenderingBias="Quality"/>
+            </Border.Effect>
+        </Border>
+        <Rectangle Margin="7" Fill="#FF383838"></Rectangle>
         
-        <!--Graphs-->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            
-            <!--CPU Graph-->
-            <Canvas Grid.Column="0" Name="CpuGraphCanvas" Background="#383838" Width="150" Height="100" Margin="16 0 16 0"  VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True">
-                <Path Name="CpuGraph" Stroke="Tomato" Fill="#717171" StrokeThickness="1">
-                    <Path.Data>
-                        <PathGeometry Figures="M0,100 10,20 20,50 30,35 40,80 50,60 60,40 70,30 80,45 90,80 100,65 100,100" />
-                    </Path.Data>
-                </Path>
-                <Path Name="CpuGraphBlur" Stroke="Tomato" StrokeThickness="1" Data="{Binding Path=Data, ElementName=CpuGraph}">
-                    <Path.Effect>
-                        <BlurEffect Radius="4"/>
-                    </Path.Effect>
-                </Path>
-            </Canvas>
-            
-            <!--CPU Graph-->
-            <Canvas Grid.Column="1" Name="GpuGraphCanvas" Background="#383838" Width="150" Height="100" Margin="16 0 16 0"  VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True">
-                <Path Name="GpuGraph" Stroke="AliceBlue" Fill="#717171" StrokeThickness="1">
-                    <Path.Data>
-                        <PathGeometry Figures="M0,100 10,20 20,50 30,35 40,80 50,60 60,40 70,30 80,45 90,80 100,65 100,100" />
-                    </Path.Data>
-                </Path>
-                <Path Name="GpuGraphBlur" Stroke="AliceBlue" StrokeThickness="1" Data="{Binding Path=Data, ElementName=GpuGraph}">
-                    <Path.Effect>
-                        <BlurEffect Radius="4"/>
-                    </Path.Effect>
-                </Path>
-            </Canvas>
-            
-            <!--Parameters-->
-            <TextBlock Grid.Column="2">Refresh Time: 500ms</TextBlock>
-        </Grid>
-        <Grid Grid.Row="3" Margin="4 0 0 2"  Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}" VerticalAlignment="Bottom">
-            <TextBlock FontSize="11" Opacity="0.3" Margin="15 0 0 0" VerticalAlignment="Bottom">Only compatible with Nvidia GPUs</TextBlock>
-            <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.0</TextBlock>
-            <materialDesign:PackIcon Opacity="0.3" Margin="0 0 0 1" Width="12" Height="12" Kind="Alert" VerticalAlignment="Bottom"/>
+        <!--Windows Content-->
+        <Grid Margin="6" VerticalAlignment="Top">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <!--Window bar-->
+            <Grid Grid.Row="0" Margin="0 0 6 6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!--Rectangle to drag window-->
+                <TextBlock Grid.Column="0" Margin="25 0 0 0" VerticalAlignment="Center">CpuGpuGraph</TextBlock>
+                <materialDesign:PackIcon Grid.Column="0" Kind="ChartLine" Margin="6 0 0 0" VerticalAlignment="Center"/>
+                <Rectangle Grid.Column="0" Height="27" Name="Rectangle1" VerticalAlignment="Top" MouseDown="rectangle1_MouseDown">
+                    <Rectangle.Fill>
+                        <SolidColorBrush Color="Transparent" />
+                    </Rectangle.Fill>
+                </Rectangle>
+
+                <!--Minimize window-->
+                <Button Grid.Column="1" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}"
+                        Click="buttonMinimize_Click">
+                    <materialDesign:PackIcon Kind="WindowMinimize" VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21"/>
+                </Button>
+
+                <!--Maximize and restore window-->
+                <Button Grid.Column="2" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}"
+                        Click="buttonMaximize_Click">
+                    <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21">
+                        <materialDesign:PackIcon.Style>
+                            <Style TargetType="materialDesign:PackIcon">
+                                <Setter Property="Kind" Value="WindowMaximize"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding WindowMaximized, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                 Value="True">
+                                        <Setter Property="Kind" Value="WindowRestore"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding WindowMaximized, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:MainWindow}}}"
+                                                 Value="False">
+                                        <Setter Property="Kind" Value="WindowMaximize"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </materialDesign:PackIcon.Style>
+                    </materialDesign:PackIcon>
+                </Button>
+
+                <!--Close window-->
+                <Button Grid.Column="3" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}"
+                        Click="buttonClose_Click">
+                    <materialDesign:PackIcon Kind="WindowClose" VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21"/>
+                </Button>
+            </Grid>
+
+            <!--Main window-->
+            <Grid Grid.Row="1" Margin="16 6  16 6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="159" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center">CPU</TextBlock>
+                <materialDesign:PackIcon Grid.Column="1" Kind="Console"  Margin="6 0 0 0" VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center">GPU</TextBlock>
+                <materialDesign:PackIcon Grid.Column="3" Kind="Codepen" Margin="6 0 0 0" VerticalAlignment="Center"/>
+            </Grid>
+
+            <!--Graphs-->
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--CPU Graph-->
+                <Canvas Grid.Column="0" Name="CpuGraphCanvas" Background="#282828" Width="150" Height="100" Margin="16 0 16 0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True">
+                    <Path Name="CpuGraph" Stroke="Tomato" Fill="#717171" StrokeThickness="1">
+                        <Path.Data>
+                            <PathGeometry Figures="M0,100 10,20 20,50 30,35 40,80 50,60 60,40 70,30 80,45 90,80 100,65 100,100" />
+                        </Path.Data>
+                    </Path>
+                    <Path Name="CpuGraphBlur" Stroke="Tomato" StrokeThickness="1" Data="{Binding Path=Data, ElementName=CpuGraph}">
+                        <Path.Effect>
+                            <BlurEffect Radius="4"/>
+                        </Path.Effect>
+                    </Path>
+                </Canvas>
+
+                <!--CPU Graph-->
+                <Canvas Grid.Column="1" Name="GpuGraphCanvas" Background="#282828" Width="150" Height="100" Margin="16 0 16 0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True">
+                    <Path Name="GpuGraph" Stroke="AliceBlue" Fill="#717171" StrokeThickness="1">
+                        <Path.Data>
+                            <PathGeometry Figures="M0,100 10,20 20,50 30,35 40,80 50,60 60,40 70,30 80,45 90,80 100,65 100,100" />
+                        </Path.Data>
+                    </Path>
+                    <Path Name="GpuGraphBlur" Stroke="AliceBlue" StrokeThickness="1" Data="{Binding Path=Data, ElementName=GpuGraph}">
+                        <Path.Effect>
+                            <BlurEffect Radius="4"/>
+                        </Path.Effect>
+                    </Path>
+                </Canvas>
+
+                <!--Parameters-->
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <!--<RowDefinition Height="Auto" />-->
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"  VerticalAlignment="Center">Update rate [s]:</TextBlock>
+                        <ComboBox Name="ComboBoxUpdateRate" Grid.Column="1" Margin="5 0 0 0" Padding="0 2 0 0" VerticalAlignment="Center"  IsEditable="False" SelectedIndex="2" 
+                                  SelectionChanged="ComboBoxUpdateRate_OnSelectionChanged">
+                            <ComboBoxItem>0.1</ComboBoxItem>
+                            <ComboBoxItem>0.2</ComboBoxItem>
+                            <ComboBoxItem>0.5</ComboBoxItem>
+                            <ComboBoxItem>1</ComboBoxItem>
+                            <ComboBoxItem>2</ComboBoxItem>
+                            <ComboBoxItem>5</ComboBoxItem>
+                            <ComboBoxItem>10</ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                    <CheckBox Name="CheckBoxGlow" Grid.Row="1" Style="{StaticResource MaterialDesignCheckBox}" Margin="0 5" VerticalAlignment="Center"
+                              IsChecked="True" IsEnabled="True" Click="ToggleGlow_Click">
+                        Glow CPU load
+                    </CheckBox>
+                    <!--<Button Name="Button_test" Grid.Row="2" Width="100" Height="24" HorizontalAlignment="Left" Click="Button_test_OnClick">test</Button>-->
+                    
+                </Grid>
+            </Grid>
+            <Grid Grid.Row="3" Margin="4 0 0 2"  Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
+                  VerticalAlignment="Bottom">
+                <TextBlock FontSize="11" Opacity="0.3" Margin="15 0 0 0" VerticalAlignment="Bottom">Only compatible with Nvidia GPUs</TextBlock>
+                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.2</TextBlock>
+                <materialDesign:PackIcon Opacity="0.3" Margin="0 0 0 1" Width="12" Height="12" Kind="Alert" VerticalAlignment="Bottom"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

@@ -217,3 +217,5 @@ ModelManifest.xml
 *.sublime-project
 *.sublime-workspace
 
+# Inno scripts
+*.iss

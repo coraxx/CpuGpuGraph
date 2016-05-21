@@ -25,22 +25,45 @@ namespace CpuGpuGraph
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        // gui friendly sleep
-        public static DispatcherTimer CpuTimer = new DispatcherTimer();
-        public static DispatcherTimer GpuTimer = new DispatcherTimer();
+        // gui friendly timer. "DispatcherPriority.Render" for smoother rendering
+        public static DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Render);
+
         // get cpu load in %
         public static PerformanceCounter TheCpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+        
         // event handler for datatrigger events in xaml
         public event PropertyChangedEventHandler PropertyChanged;
+        
         // init value for window status. maybe read window status directly in the future
         private bool _windowMaximized = false;
+        
         // init list for cpu data
         public List<int> CpuHist = new List<int>();
+        
         // init list for gpu data
         public List<int> GpuHist = new List<int>();
+        
         // Refresh rate per second
         const double RefreshRate = 2.0;
         public int DataPoints = new int();
+
+        // Load gradient color LUT
+        private static readonly List<string> GradientLUT = new List<string>(new string[]
+        {
+            "#1E90FF", "#208DFD", "#238AFC", "#2687FB", "#2984FA", "#2C81F9", "#2F7EF8", "#327BF7", "#3478F6", "#3776F5",
+            "#3A73F4", "#3D70F3", "#406DF2", "#436AF1", "#4667F0", "#4864EF", "#4B61EE", "#4E5FED", "#515CEC", "#5459EB",
+            "#5756EA", "#5A53E9", "#5C50E8", "#5F4DE7", "#624AE6", "#6548E5", "#6845E4", "#6B42E3", "#6E3FE2", "#703CE1",
+            "#7339E0", "#7636DF", "#7933DE", "#7C30DD", "#7F2EDC", "#822BDB", "#8428DA", "#8725D9", "#8A22D8", "#8D1FD7",
+            "#901CD6", "#9319D5", "#9617D4", "#9814D3", "#9B11D2", "#9E0ED1", "#A10BD0", "#A408CF", "#A705CE", "#AA02CD",
+            "#AD00CC", "#AD00C7", "#AE01C3", "#AE01BF", "#AF02BB", "#B002B7", "#B003B3", "#B104AF", "#B104AB", "#B205A7",
+            "#B305A3", "#B3069F", "#B4069B", "#B50796", "#B50892", "#B6088E", "#B6098A", "#B70986", "#B80A82", "#B80B7E",
+            "#B90B7A", "#BA0C76", "#BA0C72", "#BB0D6E", "#BB0D6A", "#BC0E66", "#BD0F61", "#BD0F5D", "#BE1059", "#BE1055",
+            "#BF1151", "#C0114D", "#C01249", "#C11345", "#C21341", "#C2143D", "#C31439", "#C31535", "#C41630", "#C5162C",
+            "#C51728", "#C61724", "#C71820", "#C7181C", "#C81918", "#C81A14", "#C91A10", "#CA1B0C", "#CA1B08", "#CB1C04",
+            "#CC1D00"
+        });
+        // init value for window status. maybe read window status directly in the future
+        private bool _glow = true;
 
         // Graph
         PathGeometry pathGeoCpu = new PathGeometry();
@@ -75,7 +98,7 @@ namespace CpuGpuGraph
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        // boolean: _windowMaximized
+        // boolean: _windowMaximized - trigger porperty change if bool is changed
         public bool WindowMaximized
         {
             get { return _windowMaximized; }
@@ -91,6 +114,11 @@ namespace CpuGpuGraph
         {
             InitCpu();
             InitGpu();
+
+            // start refresh timer
+            Timer.Interval = TimeSpan.FromSeconds(1 / RefreshRate);
+            Timer.IsEnabled = true;
+            Timer.Start();
         }
 
         private void InitGpu()
@@ -125,11 +153,8 @@ namespace CpuGpuGraph
 
             GpuGraph.Data = pathGeoGpu;
 
-            // start refresh timer
-            GpuTimer.Interval = TimeSpan.FromSeconds(1 / RefreshRate);
-            GpuTimer.IsEnabled = true;
-            GpuTimer.Tick += UpdateGpuGraph;
-            GpuTimer.Start();
+            // add update to timer
+            Timer.Tick += UpdateGpuGraph;
         }
 
         private void UpdateGpuGraph(object sender, EventArgs e)
@@ -151,6 +176,13 @@ namespace CpuGpuGraph
             LineSegment lineSegmentEnd = new LineSegment();
             lineSegmentEnd.Point = new Point(CanvasWidthGpu + 10, CanvasHeightGpu);
             pathFigGpu.Segments.Add(lineSegmentEnd);
+        }
+
+        private void UpdateGlowIndicatorCpu(int load)
+        {
+            Brush loadBrush = (Brush) (new BrushConverter().ConvertFromString(GradientLUT[load]));
+            this.FrameAccent.BorderBrush = loadBrush;
+            this.FrameBlur.BorderBrush = loadBrush;
         }
 
         private void InitCpu()
@@ -192,13 +224,11 @@ namespace CpuGpuGraph
             //CpuGraphCanvas.Children.Add(path);// path styling in xaml
 
             // start refresh timer
-            CpuTimer.Interval = TimeSpan.FromSeconds(1 / RefreshRate);
-            CpuTimer.IsEnabled = true;
-            CpuTimer.Tick += UpdateCpuGraph;
-            CpuTimer.Start();
+            Timer.Tick += UpdateCpuGraph;
         }
         private void UpdateCpuGraph(object sender, EventArgs e)
         {
+            // Graph
             int cpuLoadValue = (int)Math.Ceiling(TheCpuCounter.NextValue());
             CpuHist.RemoveAt(0);
             CpuHist.Add(CanvasHeightCpu / 100 * (100 - cpuLoadValue));
@@ -212,10 +242,16 @@ namespace CpuGpuGraph
                 pathFigCpu.Segments.Add(lineSegment);
                 t += (double)CanvasWidthCpu / DataPoints;
             }
-            // closing graph
+            // closing graph line segments
             LineSegment lineSegmentEnd = new LineSegment();
             lineSegmentEnd.Point = new Point(CanvasWidthCpu + 10, CanvasHeightCpu);
             pathFigCpu.Segments.Add(lineSegmentEnd);
+
+            // Update glow color if activated
+            if (_glow)
+            {
+                UpdateGlowIndicatorCpu(cpuLoadValue);
+            }
         }
 
         // Rectangle to move borderless window
@@ -251,5 +287,37 @@ namespace CpuGpuGraph
             }
         }
 
+        private void ToggleGlow_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as CheckBox).IsChecked.Value)
+            {
+                _glow = true;
+                Border border = this.FindName("FrameAccent") as Border;
+                border.BorderBrush = Brushes.DodgerBlue;
+                border = this.FindName("FrameBlur") as Border;
+                border.BorderBrush = Brushes.DodgerBlue;
+            }
+            else
+            {
+                _glow = false;
+                Border border = this.FindName("FrameAccent") as Border;
+                border.BorderBrush = Brushes.Transparent;
+                border = this.FindName("FrameBlur") as Border;
+                border.BorderBrush = Brushes.Transparent;
+            }
+        }
+
+        private void Button_test_OnClick(object sender, RoutedEventArgs e)
+        {
+            Timer.Interval = TimeSpan.FromSeconds(0.2);
+        }
+
+        private void ComboBoxUpdateRate_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //ComboBoxItem pollingTime = this.ComboBoxUpdateRate.SelectedItem as ComboBoxItem;
+            //string foo = pollingTime.Content as string;
+            string pollingTime = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string;
+            Timer.Interval = TimeSpan.FromSeconds(double.Parse(pollingTime, System.Globalization.CultureInfo.InvariantCulture));
+        }
     }
 }

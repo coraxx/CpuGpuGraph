@@ -8,7 +8,7 @@ Used in this app:
 
 * Material Design In XAML Toolkit [^1]
 + code from Chang-Hung Liang to get GPU load via nvapi.dll (installed with Nvidia driver) [^2]
-+ the latter was packed by me into "nvGpuLoad_x86.dll"
++ the latter was packed by me into the "nvGpuLoad_x86.dll"
 + WPF GUI
 
 [^1]: http://materialdesigninxaml.net/
@@ -35,11 +35,18 @@ Copyright (C) 2016  Jan Arnold
 
 ### Version ###
 
-Version 1.0.0 - Initial Release
+v1.0.2 - custom polling/update rate (0.1, 0.2, 0.5, 1, 2, 5 or 10 second intervals)
+       - added togglable glow around application window indicating CPU load from low (blue) to high (red)
+
+v1.0.1 - nvGpuLoad_x86.dll was build in debug mode and thus would not work on systems without a SDK installed. Should work fine now
+
+v1.0.0 - Initial Release
 
 ### Binaries ###
 
-Download v1.0.0 [here](http://semper.space/CGG/CGG_1.0.0.zip).
+Download the portable version (zip file with the executable) or the the installer under the [download section](https://bitbucket.org/splo0sh/cpugpugraph/downloads).
+
+Since there is code written in C++ you may need to install the [Visual C++ Redistributable for Visual Studio 2015 x86](https://www.microsoft.com/en-us/download/details.aspx?id=48145).
 
 ### Who do I talk to? ###
 
