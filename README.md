@@ -47,7 +47,7 @@ v1.0.0 - Initial Release
 
 ### Installation ###
 
-Download the portable version (zip file with the executable) or the the installer under the [download section](https://bitbucket.org/splo0sh/cpugpugraph/downloads).
+Download the portable version (zip file with the executable) or the the installer under the [download section (bitbucket)](https://bitbucket.org/splo0sh/cpugpugraph/downloads) or the [latest release section (github)](https://github.com/Splo0sh/CpuGpuGraph/releases/latest).
 
 Since there is code written in C++ you may need to install the [Visual C++ Redistributable for Visual Studio 2015 x86](https://www.microsoft.com/en-us/download/details.aspx?id=48145).
 
