@@ -20,6 +20,7 @@
         <!--
         Background="#FF383838"
         ResizeMode="NoResize"
+        ResizeMode="CanResizeWithGrip"
         ShowInTaskbar="False">-->
 
     <Grid>
@@ -54,7 +55,7 @@
                 <!--Rectangle to drag window-->
                 <TextBlock Grid.Column="0" Margin="25 0 0 0" VerticalAlignment="Center">CpuGpuGraph</TextBlock>
                 <materialDesign:PackIcon Grid.Column="0" Kind="ChartLine" Margin="6 0 0 0" VerticalAlignment="Center"/>
-                <Rectangle Grid.Column="0" Height="27" Name="Rectangle1" VerticalAlignment="Top" MouseDown="rectangle1_MouseDown">
+                <Rectangle Grid.Column="0" Height="27" Name="Rectangle1" VerticalAlignment="Top" MouseLeftButtonDown="rectangle1_MouseDown">
                     <Rectangle.Fill>
                         <SolidColorBrush Color="Transparent" />
                     </Rectangle.Fill>
@@ -68,7 +69,7 @@
 
                 <!--Maximize and restore window-->
                 <Button Grid.Column="2" VerticalAlignment="Bottom" Height="21" Width="30" Padding="0" Style="{DynamicResource MaterialDesignFlatButton}"
-                        Click="buttonMaximize_Click">
+                        Click="buttonMaximize_Click" IsEnabled="False">
                     <materialDesign:PackIcon VerticalAlignment="Center" HorizontalAlignment="Center" Height="21" Width="21">
                         <materialDesign:PackIcon.Style>
                             <Style TargetType="materialDesign:PackIcon">
@@ -186,7 +187,7 @@
             <Grid Grid.Row="3" Margin="4 0 0 2"  Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
                   VerticalAlignment="Bottom">
                 <TextBlock FontSize="11" Opacity="0.3" Margin="15 0 0 0" VerticalAlignment="Bottom">Only compatible with Nvidia GPUs</TextBlock>
-                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.3</TextBlock>
+                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.4</TextBlock>
                 <materialDesign:PackIcon Opacity="0.3" Margin="0 0 0 1" Width="12" Height="12" Kind="Alert" VerticalAlignment="Bottom"/>
             </Grid>
         </Grid>
