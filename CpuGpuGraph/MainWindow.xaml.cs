@@ -82,15 +82,34 @@ namespace CpuGpuGraph
             InitializeComponent();
             //GetGpuLoad();
         }
-        // dll with code from http://eliang.blogspot.de/2011/05/getting-nvidia-gpu-usage-in-c.html
-        [DllImport("nvGpuLoad_x86.dll")]
-        public static extern int getGpuLoad();
-        static int GetGpuLoad()
+
+        // Handle error loading nvGpuLoad_x86.dll (e.g. missing Microsoft Visual C++ 2015 Redistributable  (x86) or missing dll)
+        class NvGpuLoad
         {
-            int a = new int();
-            a = getGpuLoad();
-            return a;
+            // dll with code from http://eliang.blogspot.de/2011/05/getting-nvidia-gpu-usage-in-c.html
+            [DllImport("nvGpuLoad_x86.dll")]
+            public static extern int getGpuLoad();
+            internal static int GetGpuLoad()
+            {
+                int a = new int();
+                a = getGpuLoad();
+                return a;
+            }
         }
+
+        public int GetGpuLoad()
+        {
+            try
+            {
+                return NvGpuLoad.GetGpuLoad();
+            }
+            catch (DllNotFoundException e)
+            {
+                return 0;
+            }
+        }
+
+
 
         //Property change notifier
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

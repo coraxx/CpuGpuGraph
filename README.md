@@ -35,6 +35,9 @@ Copyright (C) 2016  Jan Arnold
 
 ### Version ###
 
+v1.0.3 - small design changes (color, text)
+       - added dll check. CGG now also runs without Visual C++ Redistributable or Nvidia card, i.e. it only displays CPU load
+
 v1.0.2 - custom polling/update rate (0.1, 0.2, 0.5, 1, 2, 5 or 10 second intervals)
        - added togglable glow around application window indicating CPU load from low (blue) to high (red)
 

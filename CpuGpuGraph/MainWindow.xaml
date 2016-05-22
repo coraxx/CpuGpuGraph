@@ -103,9 +103,12 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" VerticalAlignment="Center">CPU</TextBlock>
-                <materialDesign:PackIcon Grid.Column="1" Kind="Console"  Margin="6 0 0 0" VerticalAlignment="Center"/>
-                <TextBlock Grid.Column="2" VerticalAlignment="Center">GPU</TextBlock>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" Height="14">CPU</TextBlock>
+                <Canvas Grid.Column="1" HorizontalAlignment="Left" Margin="8 0 0 0" Width="12" Height="12">
+                    <Path Height="12" Width="12" Stretch="Fill" Fill="#DDFFFFFF" Data="M6,4H18V5H21V7H18V9H21V11H18V13H21V15H18V17H21V19H18V20H6V19H3V17H6V15H3V13H6V11H3V9H6V7H3V5H6V4M11,15V18H12V15H11M13,15V18H14V15H13M15,15V18H16V15H15Z" />
+                </Canvas>
+                <!--<materialDesign:PackIcon Grid.Column="1" Kind="Console"  Margin="6 0 0 0" VerticalAlignment="Center"/>-->
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Height="14">GPU</TextBlock>
                 <materialDesign:PackIcon Grid.Column="3" Kind="Codepen" Margin="6 0 0 0" VerticalAlignment="Center"/>
             </Grid>
 
@@ -174,7 +177,7 @@
                     </Grid>
                     <CheckBox Name="CheckBoxGlow" Grid.Row="1" Style="{StaticResource MaterialDesignCheckBox}" Margin="0 5" VerticalAlignment="Center"
                               IsChecked="True" IsEnabled="True" Click="ToggleGlow_Click">
-                        Glow CPU load
+                        CPU load glow
                     </CheckBox>
                     <!--<Button Name="Button_test" Grid.Row="2" Width="100" Height="24" HorizontalAlignment="Left" Click="Button_test_OnClick">test</Button>-->
                     
@@ -183,7 +186,7 @@
             <Grid Grid.Row="3" Margin="4 0 0 2"  Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
                   VerticalAlignment="Bottom">
                 <TextBlock FontSize="11" Opacity="0.3" Margin="15 0 0 0" VerticalAlignment="Bottom">Only compatible with Nvidia GPUs</TextBlock>
-                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.2</TextBlock>
+                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.3</TextBlock>
                 <materialDesign:PackIcon Opacity="0.3" Margin="0 0 0 1" Width="12" Height="12" Kind="Alert" VerticalAlignment="Bottom"/>
             </Grid>
         </Grid>
