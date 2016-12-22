@@ -35,6 +35,8 @@ Copyright (C) 2016  Jan Arnold
 
 ### Version ###
 
+v1.0.5 - added ping
+
 v1.0.4 - Bugfix: application crashed with right click on title bar (Thank you Dan for the bug report - my man!)
 
 v1.0.3 - small design changes (color, text)

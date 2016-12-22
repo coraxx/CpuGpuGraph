@@ -17,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Net;
+using System.Net.NetworkInformation;
 
 namespace CpuGpuGraph
 {
@@ -27,6 +29,7 @@ namespace CpuGpuGraph
     {
         // gui friendly timer. "DispatcherPriority.Render" for smoother rendering
         public static DispatcherTimer Timer = new DispatcherTimer(DispatcherPriority.Render);
+        public static DispatcherTimer TimerPing = new DispatcherTimer(DispatcherPriority.Render);
 
         // get cpu load in %
         public static PerformanceCounter TheCpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
@@ -42,7 +45,10 @@ namespace CpuGpuGraph
         
         // init list for gpu data
         public List<int> GpuHist = new List<int>();
-        
+
+        // init list for ping data
+        public List<int> PingHist = new List<int>();
+
         // Refresh rate per second
         const double RefreshRate = 2.0;
         public int DataPoints = new int();
@@ -64,21 +70,43 @@ namespace CpuGpuGraph
         });
         // init value for window status. maybe read window status directly in the future
         private bool _glow = true;
+        // ping bool
+        private bool _ping = true;
 
         // Graph
         PathGeometry pathGeoCpu = new PathGeometry();
         PathGeometry pathGeoGpu = new PathGeometry();
+        PathGeometry pathGeoPing = new PathGeometry();
         PathFigure pathFigCpu = new PathFigure();
         PathFigure pathFigGpu = new PathFigure();
+        PathFigure pathFigPing = new PathFigure();
         //Path path = new Path(); // path styling in xaml
         int CanvasWidthCpu = new int();
         int CanvasWidthGpu = new int();
+        int CanvasWidthPing = new int();
         int CanvasHeightCpu = new int();
         int CanvasHeightGpu = new int();
+        int CanvasHeightPing = new int();
+
+        // Ping instance
+        CheckPing checkPing = new CheckPing();
 
         // Main Window
         public MainWindow()
         {
+            // set saved position
+            // disabled since I have no working check for changed display arrangement
+/*            this.Top = Properties.Settings.Default.Top;
+            this.Left = Properties.Settings.Default.Left;
+            this.Height = Properties.Settings.Default.Height;
+            this.Width = Properties.Settings.Default.Width;
+
+            if (Properties.Settings.Default.Maximized)
+            {
+                WindowState = WindowState.Maximized;
+            }
+            MoveIntoView();*/
+
             InitializeComponent();
             //GetGpuLoad();
         }
@@ -133,11 +161,16 @@ namespace CpuGpuGraph
         {
             InitCpu();
             InitGpu();
+            InitPing();
 
             // start refresh timer
             Timer.Interval = TimeSpan.FromSeconds(1 / RefreshRate);
             Timer.IsEnabled = true;
             Timer.Start();
+            // start ping timer
+            TimerPing.Interval = TimeSpan.FromSeconds(2);
+            TimerPing.IsEnabled = true;
+            TimerPing.Start();
         }
 
         private void InitGpu()
@@ -210,7 +243,7 @@ namespace CpuGpuGraph
             CanvasHeightCpu = (int)CpuGraphCanvas.ActualHeight;
             DataPoints = CanvasWidthCpu / 2;
 
-            // init cpi hist list with zeros
+            // init cpu hist list with zeros
             for (int i = 0; i <= DataPoints; i++)
             {
                 CpuHist.Add(CanvasHeightCpu);
@@ -338,5 +371,213 @@ namespace CpuGpuGraph
             string pollingTime = ((sender as ComboBox).SelectedItem as ComboBoxItem).Content as string;
             Timer.Interval = TimeSpan.FromSeconds(double.Parse(pollingTime, System.Globalization.CultureInfo.InvariantCulture));
         }
+
+        // Get Ping
+        // Ping
+        private void TogglePing_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as CheckBox).IsChecked.Value)
+            {
+                _ping = true;
+            }
+            else
+            {
+                _ping = false;
+            }
+        }
+
+        private void InitPing()
+        {
+            CanvasWidthPing = (int)PingGraphCanvas.ActualWidth;
+            CanvasHeightPing = (int)PingGraphCanvas.ActualHeight;
+            DataPoints = CanvasWidthPing / 2;
+
+            // init ping hist list with zeros
+            for (int i = 0; i <= DataPoints; i++)
+            {
+                PingHist.Add(CanvasHeightPing);
+            }
+            // init graph
+            pathGeoPing.FillRule = FillRule.Nonzero;
+            pathFigPing.StartPoint = new Point(-10, CanvasHeightPing);
+            pathFigPing.Segments = new PathSegmentCollection();
+            pathGeoPing.Figures.Add(pathFigPing);
+
+            double t = 0;
+            foreach (int val in PingHist)
+            {
+                LineSegment lineSegment = new LineSegment();
+                lineSegment.Point = new Point((int)t, val);
+                pathFigPing.Segments.Add(lineSegment);
+                t += (double)CanvasWidthPing / DataPoints;
+            }
+            // closing graph
+            LineSegment lineSegmentEnd = new LineSegment();
+            lineSegmentEnd.Point = new Point(CanvasWidthPing + 10, CanvasHeightPing);
+            pathFigPing.Segments.Add(lineSegmentEnd);
+
+            PingGraph.Data = pathGeoPing;
+
+            // add update to timer
+            TimerPing.Tick += UpdatePingGraph;
+        }
+
+        private void UpdatePingGraph(object sender, EventArgs e)
+        {
+            int pingtime = 0;
+            if (_ping)
+            {
+                string pingValue = checkPing.GetPing();
+                PingTime.Content = pingValue;
+
+                if (!Int32.TryParse(pingValue, out pingtime))
+                {
+                    pingtime = 100;
+                }
+                if (pingtime > 100)
+                {
+                    pingtime = 100;
+                }
+            }
+            else
+            {
+                PingTime.Content = " ";
+                pingtime = -100;
+            }
+
+            PingHist.RemoveAt(0);
+            PingHist.Add((int)(CanvasHeightPing * 0.01 * (100 - pingtime)));
+
+            double t = 0;
+            pathFigPing.Segments.Clear();
+            foreach (int val in PingHist)
+            {
+                LineSegment lineSegment = new LineSegment();
+                lineSegment.Point = new Point((int)t, val);
+                pathFigPing.Segments.Add(lineSegment);
+                t += (double)CanvasWidthPing / DataPoints;
+            }
+            // closing graph
+            LineSegment lineSegmentEnd = new LineSegment();
+            lineSegmentEnd.Point = new Point(CanvasWidthPing + 10, CanvasHeightPing);
+            pathFigPing.Segments.Add(lineSegmentEnd);
+        }
+
+
+        public class CheckPing
+        {
+            Ping pingSender = new Ping();
+            PingOptions options = new PingOptions();
+            // Create a buffer of 32 bytes of data to be transmitted.
+            byte[] buffer = Encoding.ASCII.GetBytes("lololololololololololololololo11");
+            int timeout = 1000;
+            private string server = "8.8.8.8";
+
+            public CheckPing()
+            {
+                // Use the default Ttl value which is 128,
+                // but change the fragmentation behavior.
+                options.DontFragment = false;
+            }
+
+            public string GetPing()
+            {
+                PingReply reply;
+                try
+                {
+                    reply = pingSender.Send(server, timeout, buffer, options);
+                    //reply = pingSender.Send(server);
+                }
+                catch
+                {
+                    return "n/a";
+                }
+
+                if (reply.Status == IPStatus.Success)
+                {
+/*                    Console.WriteLine("Address: {0}", reply.Address.ToString());
+                    Console.WriteLine("RoundTrip time: {0}", reply.RoundtripTime);
+                    Console.WriteLine("Time to live: {0}", reply.Options.Ttl);
+                    Console.WriteLine("Don't fragment: {0}", reply.Options.DontFragment);
+                    Console.WriteLine("Buffer size: {0}", reply.Buffer.Length);*/
+                    return reply.RoundtripTime.ToString();
+                }
+                else
+                {
+/*                    Console.WriteLine(reply.Status);*/
+                    return ">500";
+                }
+            }
+        }
+
+        // Restore window size an position
+
+        // Make sure window is in display (in case display settings changed in the mean time
+        // Not working for multi monitor setup, needs rework.
+        public void MoveIntoView()
+        {
+            if (this.Top + this.Height / 2 > System.Windows.SystemParameters.VirtualScreenHeight)
+            {
+                this.Top = System.Windows.SystemParameters.VirtualScreenHeight - this.Height;
+            }
+
+            if (this.Left + this.Width / 2 > System.Windows.SystemParameters.VirtualScreenWidth)
+            {
+                this.Left = System.Windows.SystemParameters.VirtualScreenWidth - this.Width;
+            }
+
+            if (this.Top < 0)
+            {
+                this.Top = 0;
+            }
+
+            if (this.Left < 0)
+            {
+                this.Left = 0;
+            }
+        }
+
+        // Save current settings
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                // Use the RestoreBounds as the current values will be 0, 0 and the size of the screen
+                Properties.Settings.Default.Top = RestoreBounds.Top;
+                Properties.Settings.Default.Left = RestoreBounds.Left;
+                Properties.Settings.Default.Height = RestoreBounds.Height;
+                Properties.Settings.Default.Width = RestoreBounds.Width;
+                Properties.Settings.Default.Maximized = true;
+            }
+            else
+            {
+                Properties.Settings.Default.Top = this.Top;
+                Properties.Settings.Default.Left = this.Left;
+                Properties.Settings.Default.Height = this.Height;
+                Properties.Settings.Default.Width = this.Width;
+                Properties.Settings.Default.Maximized = false;
+            }
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void OnLocationChange(object sender, EventArgs e)
+        {
+
+/*            Console.WriteLine("VirtualScreenTop: {0}", System.Windows.SystemParameters.VirtualScreenTop);
+            Console.WriteLine("VirtualScreenLeft: {0}", System.Windows.SystemParameters.VirtualScreenLeft);
+            Console.WriteLine("VirtualScreenWidth: {0}", System.Windows.SystemParameters.VirtualScreenWidth);
+            Console.WriteLine("VirtualScreenHeight: {0}", System.Windows.SystemParameters.VirtualScreenHeight);
+            Console.WriteLine("PrimaryScreenWidth: {0}", System.Windows.SystemParameters.PrimaryScreenWidth);
+            Console.WriteLine("PrimaryScreenHeight: {0}", System.Windows.SystemParameters.PrimaryScreenHeight);
+            Console.WriteLine("Top: {0}", this.Top);
+            Console.WriteLine("Left: {0}", this.Left);
+            Console.WriteLine("Height: {0}", this.Height);
+            Console.WriteLine("Width: {0}", this.Width);*/
+        }
+
+
+
+
     }
 }

@@ -16,12 +16,15 @@
         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
         WindowStyle="None"
         AllowsTransparency="True"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded"
+        Closing="Window_Closing">
         <!--
         Background="#FF383838"
         ResizeMode="NoResize"
         ResizeMode="CanResizeWithGrip"
-        ShowInTaskbar="False">-->
+        ShowInTaskbar="False"
+        Closed="Window_Closed"
+        LocationChanged="OnLocationChange">-->
 
     <Grid>
         <!--Glowing Boarder-->
@@ -157,6 +160,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <!--<RowDefinition Height="Auto" />-->
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
@@ -181,13 +185,38 @@
                         CPU load glow
                     </CheckBox>
                     <!--<Button Name="Button_test" Grid.Row="2" Width="100" Height="24" HorizontalAlignment="Left" Click="Button_test_OnClick">test</Button>-->
-                    
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <!--<TextBlock Grid.Column="0"  VerticalAlignment="Center">Ping [ms]:</TextBlock>-->
+                        <CheckBox Name="CheckBoxPing" Grid.Row="1" Style="{StaticResource MaterialDesignCheckBox}" Margin="0 5" VerticalAlignment="Center"
+                              IsChecked="True" IsEnabled="True" Click="TogglePing_Click">
+                            Ping [ms]:
+                        </CheckBox>
+                        <Label x:Name="PingTime" Grid.Column="1" Content="--" VerticalAlignment="Center" />
+                    </Grid>
+                    <!--Ping Graph-->
+                    <Canvas Grid.Row="3" Name="PingGraphCanvas" Width="126" Height="24" Margin="0 0 0 0"
+                        VerticalAlignment="Center" HorizontalAlignment="Left" ClipToBounds="True">
+                        <Path Name="PingGraph" Stroke="MediumOrchid" StrokeThickness="1">
+                            <Path.Data>
+                                <PathGeometry Figures="M0,15 10,9 20,20 30,12 40,17 50,16 60,5 70,6 80,18 90,5 100,12 110,7 120,19" />
+                            </Path.Data>
+                        </Path>
+                        <Path Name="PingGraphBlur" Stroke="MediumOrchid"  StrokeThickness="1" Data="{Binding Path=Data, ElementName=PingGraph}">
+                            <Path.Effect>
+                                <BlurEffect Radius="4"/>
+                            </Path.Effect>
+                        </Path>
+                    </Canvas>
                 </Grid>
             </Grid>
             <Grid Grid.Row="3" Margin="4 0 0 2"  Height="{Binding ActualHeight, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Grid}}}"
                   VerticalAlignment="Bottom">
                 <TextBlock FontSize="11" Opacity="0.3" Margin="15 0 0 0" VerticalAlignment="Bottom">Only compatible with Nvidia GPUs</TextBlock>
-                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.4</TextBlock>
+                <TextBlock FontSize="11" Opacity="0.3"  Margin="0 0 4 0" VerticalAlignment="Bottom" HorizontalAlignment="Right">v1.0.5</TextBlock>
                 <materialDesign:PackIcon Opacity="0.3" Margin="0 0 0 1" Width="12" Height="12" Kind="Alert" VerticalAlignment="Bottom"/>
             </Grid>
         </Grid>
